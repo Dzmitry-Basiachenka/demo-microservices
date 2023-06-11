@@ -1,0 +1,128 @@
+version: "3.7"
+
+services:
+
+  discovery-service:
+    build:
+      context: ../discovery-service
+      args:
+        JAR_FILE: build/libs/discovery-service-1.0.5-SNAPSHOT.jar
+    hostname: discovery-service
+    env_file:
+      - .env
+      - discovery-service.env
+    ports:
+      - '8761:8761'
+
+  api-gateway-service:
+    build:
+      context: ../api-gateway-service
+      args:
+        JAR_FILE: build/libs/api-gateway-service-1.0.5-SNAPSHOT.jar
+    env_file:
+      - .env
+      - api-gateway-service.env
+    ports:
+      - '8090:8090'
+    depends_on:
+      - discovery-service
+      - resource-service
+      - song-service
+
+  resource-processor:
+    build:
+      context: ../resource-processor
+      args:
+        JAR_FILE: build/libs/resource-processor-1.0.5-SNAPSHOT.jar
+    env_file: .env
+    ports:
+      - '8083:8083'
+    depends_on:
+      - discovery-service
+      - api-gateway-service
+      - kafka
+
+  resource-service:
+    build:
+      context: ../resource-service
+      args:
+        JAR_FILE: build/libs/resource-service-1.0.5-SNAPSHOT.jar
+    env_file:
+      - .env
+      - resource-service.env
+    ports:
+      - '8081:8081'
+    depends_on:
+      - discovery-service
+      - resource-service-db
+      - kafka
+      - localstack
+
+  song-service:
+    build:
+      context: ../song-service
+      args:
+        JAR_FILE: build/libs/song-service-1.0.5-SNAPSHOT.jar
+    env_file:
+      - .env
+      - song-service.env
+    ports:
+      - '8082:8082'
+    depends_on:
+      - discovery-service
+      - song-service-db
+
+  resource-service-db:
+    container_name: resource-service-db
+    image: postgres:alpine
+    restart: always
+    env_file: resource-service.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - resource-service-volume:/var/lib/postgresql/data
+
+  song-service-db:
+    container_name: song-service-db
+    image: postgres:alpine
+    restart: always
+    env_file: song-service.env
+    ports:
+      - '5433:5432'
+    volumes:
+      - song-service-volume:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    env_file: kafka.env
+    volumes:
+      - localstack:/var/lib/localstack
+    ports:
+      - '4566:4566'
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    env_file: kafka.env
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/var/lib/kafka/data
+    ports:
+      - '9093:9093'
+
+volumes:
+  resource-service-volume:
+  song-service-volume:
+  localstack:
+  kafka:

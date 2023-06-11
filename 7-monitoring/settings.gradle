@@ -1,0 +1,18 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version springBootVersion
+        id 'io.spring.dependency-management' version springDependencyManagementVersion
+        id 'org.flywaydb.flyway' version flywayVersion
+        id 'org.springframework.cloud.contract' version springCloudContractVersion
+        id 'de.undercouch.download' version undercouchVersion
+    }
+}
+
+rootProject.name = '7-monitoring'
+
+include 'discovery-service'
+include 'api-gateway-service'
+include 'storage-service'
+include 'song-service'
+include 'resource-processor'
+include 'resource-service'

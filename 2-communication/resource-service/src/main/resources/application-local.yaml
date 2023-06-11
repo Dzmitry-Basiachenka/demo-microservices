@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/resource-service-db
+    username: postgres
+    password: postgres
+
+s3:
+  endpoint-uri: http://localhost:4566
+
+kafka:
+  bootstrap-address: localhost:9093
+  topic: resource-upload

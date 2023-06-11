@@ -1,0 +1,48 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: [ 'localhost:9090' ]
+
+  - job_name: 'eureka'
+    metrics_path: '/actuator/prometheus'
+    eureka_sd_configs:
+      - server: http://discovery-service:8761/eureka
+
+  - job_name: 'api-gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'api-gateway-service:8090' ]
+        labels:
+          application: 'api-gateway-service'
+
+  - job_name: 'resource-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'resource-service:8081' ]
+        labels:
+          application: 'resource-service'
+
+  - job_name: 'song-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'song-service:8082' ]
+        labels:
+          application: 'song-service'
+
+  - job_name: 'resource-processor'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'resource-processor:8083' ]
+        labels:
+          application: 'resource-processor'
+
+  - job_name: 'storage-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: [ 'storage-service:8084' ]
+        labels:
+          application: 'storage-service'

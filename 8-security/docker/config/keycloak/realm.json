@@ -1,0 +1,63 @@
+{
+  "realm": "microservices-realm",
+  "enabled": true,
+  "users": [
+    {
+      "username": "testuser",
+      "enabled": true,
+      "email": "testuser@mail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testuser123"
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
+    },
+    {
+      "username": "testadmin",
+      "enabled": true,
+      "email": "testadmin@mail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "testadmin123"
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "user",
+        "description": "User privileges"
+      },
+      {
+        "name": "admin",
+        "description": "Administrator privileges"
+      }
+    ]
+  },
+  "defaultRoles": [
+    "user"
+  ],
+  "clients": [
+    {
+      "clientId": "storage-service",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": [
+        "*"
+      ],
+      "webOrigins": [
+        "*"
+      ]
+    }
+  ]
+}

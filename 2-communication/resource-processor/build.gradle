@@ -1,0 +1,11 @@
+dependencies {
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign:${springOpenFiegnVersion}"
+
+    implementation "io.github.openfeign:feign-okhttp:${openFeignVersion}"
+    implementation "io.github.openfeign:feign-httpclient:${openFeignVersion}"
+
+    implementation "org.apache.tika:tika-core:${tikaVersion}"
+    implementation "org.apache.tika:tika-parser-audiovideo-module:${tikaVersion}"
+
+    implementation "org.springframework.kafka:spring-kafka:${springKafkaVersion}"
+}

@@ -1,0 +1,13 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version springBootVersion
+        id 'io.spring.dependency-management' version springDependencyManagementVersion
+        id 'org.flywaydb.flyway' version flywayVersion
+    }
+}
+
+rootProject.name = '2-communication'
+
+include 'song-service'
+include 'resource-processor'
+include 'resource-service'

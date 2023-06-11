@@ -1,0 +1,74 @@
+version: "3.7"
+
+services:
+
+  resource-service-db:
+    container_name: resource-service-db
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=resource-service-db
+    ports:
+      - '5432:5432'
+    volumes:
+      - resource-service-volume:/var/lib/postgresql/data
+
+  song-service-db:
+    container_name: song-service-db
+    image: postgres:alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=song-service-db
+    ports:
+      - '5433:5432'
+    volumes:
+      - song-service-volume:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    environment:
+      - EAGER_SERVICE_LOADING=1
+      - SERVICES=s3
+      - AWS_DEFAULT_REGION=eu-central-1
+      - PERSISTENCE=1
+      - EDGE_PORT=4566
+    volumes:
+      - localstack:/var/lib/localstack
+    ports:
+      - '4566:4566'
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/var/lib/kafka/data
+    ports:
+      - '9093:9093'
+
+volumes:
+  resource-service-volume:
+  song-service-volume:
+  localstack:
+  kafka:

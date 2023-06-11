@@ -1,0 +1,23 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: resource-processor
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

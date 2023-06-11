@@ -1,0 +1,14 @@
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+
+    implementation "org.apache.tika:tika-core:${tikaVersion}"
+    implementation "org.apache.tika:tika-parser-audiovideo-module:${tikaVersion}"
+
+    implementation "org.springframework.kafka:spring-kafka:${springKafkaVersion}"
+}

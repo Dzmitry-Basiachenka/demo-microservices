@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:15.0:///song-service-db
+  cloud:
+    discovery:
+      enabled: false

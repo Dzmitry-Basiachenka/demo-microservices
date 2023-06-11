@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1000,
+    "type": "STAGING",
+    "bucket": "resources-staging"
+  },
+  {
+    "id": 1001,
+    "type": "PERMANENT",
+    "bucket": "resources-permanent"
+  }
+]

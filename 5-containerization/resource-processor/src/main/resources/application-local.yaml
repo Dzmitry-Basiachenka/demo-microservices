@@ -1,0 +1,10 @@
+com:
+  microservices:
+    service:
+      api-gateway:
+        url: http://localhost:8090
+
+kafka:
+  bootstrap-address: localhost:9093
+  topic: resource-upload
+  group-id: resource-upload

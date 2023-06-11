@@ -1,0 +1,17 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version springBootVersion
+        id 'io.spring.dependency-management' version springDependencyManagementVersion
+        id 'org.flywaydb.flyway' version flywayVersion
+        id 'org.springframework.cloud.contract' version springCloudContractVersion
+    }
+}
+
+rootProject.name = '6-fault-tolerance'
+
+include 'discovery-service'
+include 'api-gateway-service'
+include 'storage-service'
+include 'song-service'
+include 'resource-processor'
+include 'resource-service'

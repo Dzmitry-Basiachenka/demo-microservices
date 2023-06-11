@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${RESOURCE_DB_HOST}:${RESOURCE_DB_PORT}/resource-service-db
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+eureka:
+  instance:
+    hostname: ${RESOURCE_SERVICE_HOST}
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}
+
+s3:
+  endpoint-uri: ${S3_URL}
+
+kafka:
+  bootstrap-address: ${KAFKA_ADDRESS}
+  topic: resource-upload

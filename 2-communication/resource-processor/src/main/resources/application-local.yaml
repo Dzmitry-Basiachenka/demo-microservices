@@ -1,0 +1,12 @@
+com:
+  microservices:
+    service:
+      resource:
+        url: http://localhost:8081
+      song:
+        url: http://localhost:8082
+
+kafka:
+  bootstrap-address: localhost:9093
+  topic: resource-upload
+  group-id: resource-upload

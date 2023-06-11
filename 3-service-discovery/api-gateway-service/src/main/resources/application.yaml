@@ -1,0 +1,42 @@
+server:
+  port: 8090
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: api-gateway-service
+  main:
+    web-application-type: reactive
+  cloud:
+    gateway:
+      routes:
+        - id: resource-service
+          uri: lb://resource-service
+          predicates:
+            - Path=/resources/**
+        - id: song-service
+          uri: lb://song-service
+          predicates:
+            - Path=/songs/**
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

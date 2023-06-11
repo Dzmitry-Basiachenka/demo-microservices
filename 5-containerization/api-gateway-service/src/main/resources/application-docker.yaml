@@ -1,0 +1,6 @@
+eureka:
+  instance:
+    hostname: ${API_GATEWAY_HOST}
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}

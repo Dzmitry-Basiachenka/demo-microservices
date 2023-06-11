@@ -1,0 +1,26 @@
+server:
+  port: 8082
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: song-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

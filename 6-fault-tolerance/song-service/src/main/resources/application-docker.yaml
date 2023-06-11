@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${SONG_DB_HOST}:${SONG_DB_PORT}/song-service-db
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+
+eureka:
+  instance:
+    hostname: ${SONG_SERVICE_HOST}
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL}

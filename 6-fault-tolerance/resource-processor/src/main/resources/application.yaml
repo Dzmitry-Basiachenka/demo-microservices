@@ -1,0 +1,49 @@
+server:
+  port: 8083
+  error:
+    include-message: always
+
+spring:
+  application:
+    name: resource-processor
+
+com:
+  microservices:
+    service:
+      resource:
+        name: resource-service
+      song:
+        name: song-service
+
+kafka:
+  retry:
+    delay: 1000
+    attempts: 3
+  properties:
+    auto.offset.reset: latest
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 10000
+  retry:
+    period: 10000
+    max-period: 60000
+    max-attempts: 3
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

@@ -1,0 +1,15 @@
+spring:
+  cloud:
+    discovery:
+      enabled: false
+
+com:
+  microservices:
+    service:
+      api-gateway:
+        url: http://localhost:8099
+
+kafka:
+  bootstrap-address: localhost:9093
+  topic: resource-upload
+  group-id: resource-upload

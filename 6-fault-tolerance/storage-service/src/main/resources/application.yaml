@@ -1,0 +1,38 @@
+server:
+  port: 8084
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: storage-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+com:
+  microservices:
+    simulate:
+      error: false
+      delay: false
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

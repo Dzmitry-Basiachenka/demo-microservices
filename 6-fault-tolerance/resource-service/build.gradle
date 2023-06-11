@@ -1,0 +1,39 @@
+plugins {
+    id "org.flywaydb.flyway"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+dependencies {
+    implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
+    implementation "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client"
+
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    implementation "org.hibernate:hibernate-validator:${hibernateValidatorVersion}"
+
+    implementation "org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j"
+    implementation "io.github.resilience4j:resilience4j-feign:${resilience4jVersion}"
+
+    implementation platform("software.amazon.awssdk:bom:${awsSdkVersion}")
+    implementation "software.amazon.awssdk:s3"
+
+    implementation "org.springframework.kafka:spring-kafka:${springKafkaVersion}"
+
+    runtimeOnly "org.postgresql:postgresql"
+    implementation "org.flywaydb:flyway-core:${flywayVersion}"
+
+    implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
+
+    testImplementation "org.springframework.kafka:spring-kafka-test:${springKafkaVersion}"
+
+    testImplementation "org.testcontainers:localstack"
+    testImplementation "org.testcontainers:kafka"
+
+    testImplementation "com.amazonaws:aws-java-sdk-s3:${awsSdkS3Version}"
+
+    testImplementation "com.github.tomakehurst:wiremock:${wiremockVersion}"
+}

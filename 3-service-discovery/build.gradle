@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
+
+jar {
+    enabled = false
+}
+
+allprojects {
+    group("${group}")
+    version("${version}")
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+}
+
+subprojects {
+    apply plugin: "java"
+    apply plugin: "org.springframework.boot"
+    apply plugin: "io.spring.dependency-management"
+
+    dependencies {
+        implementation "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+        implementation "org.springframework.boot:spring-boot-starter-actuator:${springBootVersion}"
+
+        testImplementation "org.springframework.boot:spring-boot-starter-test:${springBootVersion}"
+    }
+
+    test() {
+        useJUnitPlatform()
+    }
+}

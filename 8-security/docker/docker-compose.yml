@@ -1,0 +1,245 @@
+version: "3.7"
+
+x-logging: &logging
+  labels:
+    - "scrap-logs=true"
+
+services:
+
+  discovery-service:
+    <<: *logging
+    build:
+      context: ../discovery-service
+      args:
+        JAR_FILE: build/libs/discovery-service-1.0.8-SNAPSHOT.jar
+    hostname: discovery-service
+    env_file:
+      - .env
+      - discovery-service.env
+    ports:
+      - '8761:8761'
+
+  api-gateway-service:
+    <<: *logging
+    build:
+      context: ../api-gateway-service
+      args:
+        JAR_FILE: build/libs/api-gateway-service-1.0.8-SNAPSHOT.jar
+    env_file:
+      - .env
+      - api-gateway-service.env
+    ports:
+      - '8090:8090'
+    depends_on:
+      - discovery-service
+      - resource-service
+      - song-service
+
+  resource-processor:
+    <<: *logging
+    build:
+      context: ../resource-processor
+      args:
+        JAR_FILE: build/libs/resource-processor-1.0.8-SNAPSHOT.jar
+    env_file: .env
+    environment:
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=resource-processor
+    ports:
+      - '8083:8083'
+    depends_on:
+      - discovery-service
+      - api-gateway-service
+      - kafka
+
+  resource-service:
+    <<: *logging
+    build:
+      context: ../resource-service
+      args:
+        JAR_FILE: build/libs/resource-service-1.0.8-SNAPSHOT.jar
+    env_file:
+      - .env
+      - resource-service.env
+    ports:
+      - '8081:8081'
+    depends_on:
+      - discovery-service
+      - storage-service
+      - resource-service-db
+      - kafka
+      - localstack
+
+  song-service:
+    <<: *logging
+    build:
+      context: ../song-service
+      args:
+        JAR_FILE: build/libs/song-service-1.0.8-SNAPSHOT.jar
+    env_file:
+      - .env
+      - song-service.env
+    ports:
+      - '8082:8082'
+    depends_on:
+      - discovery-service
+      - song-service-db
+
+  storage-service:
+    <<: *logging
+    build:
+      context: ../storage-service
+      args:
+        JAR_FILE: build/libs/storage-service-1.0.8-SNAPSHOT.jar
+    env_file:
+      - .env
+      - storage-service.env
+    ports:
+      - '8084:8084'
+    depends_on:
+      - keycloak
+      - discovery-service
+      - storage-service-db
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    ports:
+      - "8100:8100"
+    env_file: keycloak.env
+    command:
+      - start-dev
+      - --import-realm
+      - --http-port=8100
+    volumes:
+      - ./config/keycloak/realm.json:/opt/keycloak/data/import/realm.json
+
+  resource-service-db:
+    container_name: resource-service-db
+    image: postgres:alpine
+    restart: always
+    env_file: resource-service.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - resource-service-volume:/var/lib/postgresql/data
+
+  song-service-db:
+    container_name: song-service-db
+    image: postgres:alpine
+    restart: always
+    env_file: song-service.env
+    ports:
+      - '5433:5432'
+    volumes:
+      - song-service-volume:/var/lib/postgresql/data
+
+  storage-service-db:
+    container_name: storage-service-db
+    image: postgres:alpine
+    restart: always
+    env_file: storage-service.env
+    ports:
+      - '5434:5432'
+    volumes:
+      - storage-service-volume:/var/lib/postgresql/data
+
+  localstack:
+    image: localstack/localstack
+    container_name: localstack
+    env_file: kafka.env
+    volumes:
+      - localstack:/var/lib/localstack
+    ports:
+      - '4566:4566'
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '2181:2181'
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    env_file: kafka.env
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka:/var/lib/kafka/data
+    ports:
+      - '9093:9093'
+
+  loki:
+    image: grafana/loki:latest
+    command: -config.file=/etc/loki/config.yaml
+    volumes:
+      - ./config/loki.yaml:/etc/loki/config.yaml
+    ports:
+      - "3100:3100"
+    depends_on:
+      - promtail
+
+  promtail:
+    image: grafana/promtail:latest
+    volumes:
+      - ./config/promtail.yaml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: '-config.file=/etc/promtail/config.yml -config.expand-env'
+    depends_on:
+      - discovery-service
+
+  prometheus:
+    image: prom/prometheus:latest
+    hostname: prometheus
+    ports:
+      - '9090:9090'
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - discovery-service
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./config/grafana/provisioning:/etc/grafana/provisioning/
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-storage:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
+      - GF_SERVER_ROOT_URL=http://localhost:8090/grafana/
+    depends_on:
+      - prometheus
+      - loki
+      - tempo
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config/tempo.yaml:/etc/tempo.yaml
+    restart: unless-stopped
+    ports:
+      - "4317"
+      - "4318"
+      - "9411"
+      - "14268:14268"
+      - "14250:14250"
+      - "55680:55680"
+      - "3200:3200"
+
+volumes:
+  resource-service-volume:
+  song-service-volume:
+  storage-service-volume:
+  localstack:
+  kafka:
+  grafana-storage:

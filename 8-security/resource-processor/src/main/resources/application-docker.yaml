@@ -1,0 +1,10 @@
+com:
+  microservices:
+    service:
+      api-gateway:
+        url: ${API_GATEWAY_URL}
+
+kafka:
+  group-id: resource-upload
+  bootstrap-address: ${KAFKA_ADDRESS}
+  topic: resource-upload

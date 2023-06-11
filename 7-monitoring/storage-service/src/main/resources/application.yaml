@@ -1,0 +1,46 @@
+server:
+  port: 8084
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  application:
+    name: storage-service
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+com:
+  microservices:
+    simulate:
+      error: false
+      delay: false
+
+eureka:
+  instance:
+    prefer-ip-address: false
+    status-page-url-path: /actuator/info
+    health-check-url-path: /actuator/health
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+    health:
+      show-details: always
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+
+logging:
+  pattern:
+    level: trace_id=%mdc{trace_id:-0} %5p

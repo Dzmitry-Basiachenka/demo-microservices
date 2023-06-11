@@ -1,0 +1,15 @@
+pluginManagement {
+    plugins {
+        id 'org.springframework.boot' version springBootVersion
+        id 'io.spring.dependency-management' version springDependencyManagementVersion
+        id 'org.flywaydb.flyway' version flywayVersion
+    }
+}
+
+rootProject.name = '3-service-discovery'
+
+include 'discovery-service'
+include 'api-gateway-service'
+include 'song-service'
+include 'resource-processor'
+include 'resource-service'
